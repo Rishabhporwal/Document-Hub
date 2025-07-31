@@ -11,14 +11,7 @@ class CustomLogger:
 
         # Create timestamped log file name
         log_file = f"{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
-        log_file_path = os.path.join(self.logs_dir, log_file)
-
-        # Configure Logging
-        logging.basicConfig(
-            filename=log_file_path,
-            format="[ %(asctime)s ] %(levelname)s %(name)s (line:%(lineno)d - %(message)s)",
-            level=logging.INFO
-        )
+        self.log_file_path = os.path.join(self.logs_dir, log_file)
 
     def get_logger(self, name=__file__):
 
