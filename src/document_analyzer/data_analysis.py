@@ -25,7 +25,7 @@ class DocumentAnalyzer:
 
             # Prepare Models
             self.parser = JsonOutputParser(pydantic_object=MetaData)
-            self.fixing_parser = OutputFixingParser(self.parser, llm= self.llm)
+            self.fixing_parser = OutputFixingParser.from_llm(parser=self.parser, llm = self.llm)
 
             self.prompt = prompt
 
@@ -35,7 +35,7 @@ class DocumentAnalyzer:
             self.log.error(f"Error while initializing DocumentAnalyzer: {e}")
             raise DocumentHubException("Error in documentAnalyzer initialization", sys)
 
-    def analyze_metadata(self, document_text: str) -> dict:
+    def analyze_document(self, document_text: str) -> dict:
         try:
             chain = self.prompt | self.llm | self.fixing_parser
 

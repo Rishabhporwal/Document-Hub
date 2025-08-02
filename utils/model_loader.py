@@ -80,7 +80,7 @@ class ModelLoader:
 
         if provider == 'google':
             llm = ChatGoogleGenerativeAI(
-                model_name = model_name,
+                model = model_name,
                 temperature = temperature,
                 max_output_tokens = max_tokens
             )
