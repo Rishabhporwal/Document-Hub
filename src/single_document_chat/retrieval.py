@@ -81,7 +81,7 @@ class ConversationalRAG:
             raise DocumentHubException("Error loading retriever from FAISS", sys)
         
 
-    def invoke(self):
+    def invoke(self, user_input):
         try:
             response = self.chain.invoke(
                 {"input": user_input},
