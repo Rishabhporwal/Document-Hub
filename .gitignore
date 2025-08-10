@@ -7,4 +7,3 @@ logs/
 *.pyc
 test.py
 faiss_index/
-archive
