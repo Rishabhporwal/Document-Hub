@@ -19,7 +19,7 @@ from utils.model_loader import ModelLoader
 from logger.custom_logger import CustomLogger
 from exception.custom_exception import DocumentHubException
 
-from utils.file_io import _session_id, save_uploaded_files
+from utils.file_io import generate_session_id, save_uploaded_files
 from utils.document_ops import load_documents, concat_for_analysis, concat_for_comparison
 
 SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".txt"}
@@ -106,7 +106,7 @@ class ChatIngestor:
             self.model_loader = ModelLoader()
             
             self.use_session = use_session_dirs
-            self.session_id = session_id or _session_id()
+            self.session_id = session_id or generate_session_id()
             
             self.temp_base = Path(temp_base); self.temp_base.mkdir(parents=True, exist_ok=True)
             self.faiss_base = Path(faiss_base); self.faiss_base.mkdir(parents=True, exist_ok=True)
@@ -126,10 +126,10 @@ class ChatIngestor:
         
     def _resolve_dir(self, base: Path):
         if self.use_session:
-            d = base / self.session_id
-            d.mkdir(parents=True, exist_ok=True)
+            d = base / self.session_id  # e.g. "faiss_index/abc123"
+            d.mkdir(parents=True, exist_ok=True) # creates dir if not exists
             return d
-        return base
+        return base  # fallback: "faiss_index/"
         
     def _split(self, docs: List[Document], chunk_size=1000, chunk_overlap=200) -> List[Document]:
         splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
@@ -179,7 +179,7 @@ class DocHandler:
     def __init__(self, data_dir: Optional[str] = None, session_id: Optional[str] = None):
         self.log = CustomLogger().get_logger(__name__)
         self.data_dir = data_dir or os.getenv("DATA_STORAGE_PATH", os.path.join(os.getcwd(), "data", "document_analysis"))
-        self.session_id = session_id or _session_id("session")
+        self.session_id = session_id or generate_session_id("session")
         self.session_path = os.path.join(self.data_dir, self.session_id)
         os.makedirs(self.session_path, exist_ok=True)
         self.log.info("DocHandler initialized", session_id=self.session_id, session_path=self.session_path)
@@ -221,7 +221,7 @@ class DocumentComparator:
     def __init__(self, base_dir: str = "data/document_compare", session_id: Optional[str] = None):
         self.log = CustomLogger().get_logger(__name__)
         self.base_dir = Path(base_dir)
-        self.session_id = session_id or _session_id()
+        self.session_id = session_id or generate_session_id()
         self.session_path = self.base_dir / self.session_id
         self.session_path.mkdir(parents=True, exist_ok=True)
         self.log.info("DocumentComparator initialized", session_path=str(self.session_path))
